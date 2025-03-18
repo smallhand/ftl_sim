@@ -117,9 +117,7 @@ static void checkGC() {
 void initFTL() {
 	memset(l2p_table, 0xFF, sizeof(unsigned) * PAGE_PER_BLOCK * USER_BLOCK_NUM);
 	memset(p2l_table, 0xFF, sizeof(unsigned) * PAGE_PER_BLOCK * BLOCK_NUM);
-
 	memset(&invalid_tbl, 0, sizeof(INVALID_TABLE));
-	//memset(&invalid_tbl, 0, sizeof INVALID_TABLE);
 
 	// TODO: Erase whole pages first
 }
@@ -131,15 +129,13 @@ void freeFTL() {
 
 
 void writeData(unsigned lba, unsigned sec_cnt, unsigned char* source) {
-	// for debug (assert)
 	unsigned start_lba = lba; 
 	unsigned end_lba = lba + sec_cnt; 
-	unsigned left_sectors = sec_cnt;
 	unsigned char* data = source;
 
 	// 1. convert lba to logical page
 	unsigned l_adr = lba / SECTOR_PER_PAGE;
-	unsigned write_sectors = SECTOR_PER_PAGE - (lba % SECTOR_PER_PAGE);
+	unsigned write_sectors;
 	unsigned p_adr, block;
 
 	//unsigned char *page_data = (unsigned char*)calloc(PAGE_SIZE, sizeof(unsigned char));
@@ -158,6 +154,12 @@ void writeData(unsigned lba, unsigned sec_cnt, unsigned char* source) {
 		//       not exists, write to a new page directly
 		memset(page_data, 0x0, PAGE_SIZE);
         p_adr = l2p_table[l_adr];
+
+		write_sectors = (l_adr + 1) * SECTOR_PER_PAGE - start_lba;
+		if (write_sectors > (end_lba - start_lba)) {
+			write_sectors = end_lba - start_lba;
+		}
+
         if (l2p_table[l_adr] != INVALID_PAGE) { // overwrite case
 			block = p_adr / PAGE_PER_BLOCK;
 			invalid_tbl[block].invalid_page[p_adr % PAGE_PER_BLOCK] = 1;
@@ -181,15 +183,10 @@ void writeData(unsigned lba, unsigned sec_cnt, unsigned char* source) {
 		block = p_adr / PAGE_PER_BLOCK;
 		block_cnt[block] += 1;
 
-
 		start_lba += write_sectors;
 		l_adr = start_lba / SECTOR_PER_PAGE;
 
 		data = data + write_sectors * SECTOR_SIZE;
-
-		assert(left_sectors >= write_sectors);
-		left_sectors -= write_sectors;
-		write_sectors = (left_sectors >= SECTOR_PER_PAGE) ? SECTOR_PER_PAGE : left_sectors;
 
 		checkGC();
 	}
@@ -227,28 +224,4 @@ void readData(unsigned lba, unsigned sec_cnt, unsigned char* source) {
 		total_sectors += read_sectors;
 		start += read_sectors;
 	}
-#if 0
-	while (sec_cnt > 0) {
-		p_adr = l2p_table[l_adr];
-        readPage(p_adr, page_data);
-
-        if (sec_cnt < read_sectors) {
-            read_sectors = sec_cnt;
-        }
-
-		pos = pos % SECTOR_PER_PAGE;
-
-        //memcpy(source + pos * SECTOR_SIZE, page_data, read_sectors * SECTOR_SIZE);
-        memcpy(source + total_sectors * SECTOR_SIZE, page_data + pos * SECTOR_SIZE, read_sectors * SECTOR_SIZE);
-		total_sectors += read_sectors;
-		pos += read_sectors;
-		
-		l_adr += 1;
-
-		assert(sec_cnt >= read_sectors);
-		sec_cnt -= read_sectors;
-
-		read_sectors = (sec_cnt >= read_sectors) ? SECTOR_PER_PAGE : read_sectors;
-	}
-#endif
 }

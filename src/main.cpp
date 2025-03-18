@@ -22,12 +22,16 @@ int main(int argc, char* argv[])
 
     // seq write
     unsigned start = 0;
-    unsigned tmp = 0;
-    for (i = 0; i < 1; i++) {
+    unsigned tmp;
+    for (i = 0; i < 5; i++) { // re-write 5 rounds
         lba = 0;
+        tmp = 0;
         while (lba < USER_SECTOR_NUM) {
-            //sec_cnt = rand() % 32;
-            sec_cnt = 10;
+            sec_cnt = rand() % 32;
+            //sec_cnt = 10;
+            if (sec_cnt > USER_SECTOR_NUM - lba){
+                sec_cnt = USER_SECTOR_NUM - lba;
+            }
             j = 0;
             while (j < SECTOR_SIZE * sec_cnt) {
                 data[tmp++] = (tmp % 26) + 'a';
@@ -44,6 +48,10 @@ int main(int argc, char* argv[])
     // seq read. and compare to data
     while (lba < USER_SECTOR_NUM) {
         //readData(lba, sec_cnt, mirror_data + lba * SECTOR_SIZE);
+        sec_cnt = rand() % 32;
+        if (sec_cnt > USER_SECTOR_NUM - lba){
+            sec_cnt = USER_SECTOR_NUM - lba;
+        }
 
         readData(lba, sec_cnt, mirror_data);
         result = memcmp(data + lba * SECTOR_SIZE, mirror_data, sec_cnt * SECTOR_SIZE);
@@ -55,23 +63,5 @@ int main(int argc, char* argv[])
 
     freeFTL();
     freeFlash();
-
-#if 0
-    // overwrite write
-    lba = (rand() % 12) + 7;
-    for (i = 0; i < 3; i++) {
-        sec_cnt = rand() % 32;
-        total_sectors += sec_cnt;
-        unsigned tmp = 0;
-
-        while (tmp < SECTOR_SIZE * sec_cnt) {
-            data[tmp++] = (tmp % 26) + 'a';
-        }
-
-        // overwrite
-        writeData(lba, sec_cnt, data);
-        //lba += sec_cnt;
-    }
-#endif
 }
 
