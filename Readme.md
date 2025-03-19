@@ -1,10 +1,11 @@
 # Introduction
-Simulate an user read/write data to NAND Flash in sector unit, while the FTL (Flash Translation Layer) converts the units in NAND Flash read/write units: page.
-FTL supports user space to be fully written. It performs GC (Garbage Collection) to enable multiple overwriting.
+Simulate a FTL (Flash Translation Layer) which supports user to read/write data from/to NAND Flash in sector unit, and convert the unit to page that is the unit of NAND Flash
+
+User can fully writes data even overwrite multiple times because FTL will performs GC (Garbage Collection) under a threshold to erase invalid data and move valid data to an empty block.
 
 This project focus on unit conversion and table mapping, and manage the data within 1 die. You need to have Nand Flash domain knowledge first.
 
-Assume total space in the NAND Flash, and available space for users as below
+The simulation of the NAND Flash space and available space for users as below
 
 | Units    | Nand Flash | 
 | :-------- | :-------: |
