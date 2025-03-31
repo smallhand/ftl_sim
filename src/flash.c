@@ -1,9 +1,11 @@
 #include "flash.h"
 
-unsigned char*** flash_arr = (unsigned char***)malloc(BLOCK_NUM * sizeof(unsigned char**));
+//unsigned char*** flash_arr = (unsigned char***)malloc(BLOCK_NUM * sizeof(unsigned char**)); // works in C++
+unsigned char*** flash_arr = NULL; // in C, only declare variable
 
 
 void initFlash() {
+    flash_arr =  (unsigned char***)malloc(BLOCK_NUM * sizeof(unsigned char**));
     for (int i = 0; i < BLOCK_NUM; i++) {
         flash_arr[i] = (unsigned char**)malloc(PAGE_PER_BLOCK * sizeof(unsigned char*));
 

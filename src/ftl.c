@@ -3,8 +3,11 @@
 
 #define GC_THRSH	(((BLOCK_NUM - 4) * PAGE_PER_BLOCK) - 1) // 32640 - 1 = 32639
 
-unsigned *l2p_table = (unsigned *)malloc(sizeof(unsigned) * PAGE_PER_BLOCK * USER_BLOCK_NUM);
-unsigned *p2l_table = (unsigned *)malloc(sizeof(unsigned) * PAGE_PER_BLOCK * BLOCK_NUM);
+//unsigned *l2p_table = (unsigned *)malloc(sizeof(unsigned) * PAGE_PER_BLOCK * USER_BLOCK_NUM);
+//unsigned *p2l_table = (unsigned *)malloc(sizeof(unsigned) * PAGE_PER_BLOCK * BLOCK_NUM);
+unsigned *l2p_table = NULL;
+unsigned *p2l_table = NULL;
+
 /*
 	********************************************************
 			Private functions
@@ -115,6 +118,9 @@ static void checkGC() {
 	********************************************************
 */
 void initFTL() {
+	l2p_table = (unsigned *)malloc(sizeof(unsigned) * PAGE_PER_BLOCK * USER_BLOCK_NUM);
+	p2l_table = (unsigned *)malloc(sizeof(unsigned) * PAGE_PER_BLOCK * BLOCK_NUM);
+
 	memset(l2p_table, 0xFF, sizeof(unsigned) * PAGE_PER_BLOCK * USER_BLOCK_NUM);
 	memset(p2l_table, 0xFF, sizeof(unsigned) * PAGE_PER_BLOCK * BLOCK_NUM);
 	memset(&invalid_tbl, 0, sizeof(INVALID_TABLE));
