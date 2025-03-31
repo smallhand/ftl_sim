@@ -76,8 +76,8 @@ int main(int argc, char* argv[])
         sec_cnt = rand() % 32;
         lba = rand() % USER_SECTOR_NUM;
 
-        if (sec_cnt > USER_BLOCK_NUM - lba) {
-            sec_cnt = USER_BLOCK_NUM - lba;
+        if (sec_cnt > USER_SECTOR_NUM - lba) {
+            sec_cnt = USER_SECTOR_NUM - lba;
         }
 
         randGenData(data + (lba * SECTOR_SIZE), sec_cnt * SECTOR_SIZE);
