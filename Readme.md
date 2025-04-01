@@ -4,6 +4,7 @@ Simulate a FTL (Flash Translation Layer) which supports user to read/write data 
 User can fully writes data even overwrite multiple times because FTL will performs GC (Garbage Collection) under a threshold to erase invalid data and move valid data to an empty block.
 
 This project focus on unit conversion and table mapping, and manage the data within 1 die. You need to have Nand Flash domain knowledge first.
+(The related document is in doc/ folder)
 
 The simulation of the NAND Flash space and available space for users as below
 
